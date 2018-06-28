@@ -29,10 +29,10 @@ class player:
         self.y=0
         self.current_index=0
 
-    def get_current_index():
+    def get_current_index(self):
         return self.x*10+self.y
 
-    def update_index(dir):
+    def update_index(self,dir):
         if dir==1:
             self.x=self.x+1
         if dir==-1:
@@ -42,45 +42,71 @@ class player:
         if dir==-2:
             self.y=self.y-1
 
-    def valid_right():
-        index=get_current_index()
+    def valid_right(self):
+        index=self.get_current_index()
         x=self.x
         y=self.y
         if x>=9 or x<0:
-            return false
+            return False
         if environment[index+1].nature==1:
-            return false
-        return true
+            return False
+        return True
 
-    def valid_left():
-        index=get_current_index()
+    def valid_left(self):
+        index=self.get_current_index()
         x=self.x
         y=self.y
         if x>9 or x<=0:
-            return false
+            return False
         if environment[index-1].nature==1:
-            return false
-        return true
+            return False
+        return True
 
-    def valid_top():
-        index=get_current_index()
+    def valid_top(self):
+        index=self.get_current_index()
         x=self.x
         y=self.y
         if y>9 or y<=0:
-            return false
+            return False
         if environment[index-10].nature==1:
-            return false
-        return true
+            return False
+        return True
 
-    def valid_bottom():
-        index=get_current_index()
+    def valid_bottom(self):
+        index=self.get_current_index()
         x=self.x
         y=self.y
         if y>=9 or y<0:
-            return false
+            return False
         if environment[index+10].nature==1:
-            return false
-        return true
+            return False
+        return True
+
+    def make_decision(self):
+        d=random.randint(0,3)
+        if d==0:
+            if self.valid_right()==True:
+                self.update_index(1)
+        if d==1:
+            if self.valid_left()==True:
+                self.update_index(-1)
+        if d==2:
+            if self.valid_top()==True:
+                self.update_index(2)
+        if d==3:
+            if self.valid_bottom()==True:
+                self.update_index(-2)
+
+    def at_finish(self):
+        if self.x==9 and self.y==9:
+            return True
+        return False
+
+    def update_score(self):
+        if self.at_finish()==False:
+            self.score=self.score-1
+        else:
+            self.score=self.score+100
 
 def set_walls():
     for i in range(1,9):
@@ -135,4 +161,13 @@ if __name__=='__main__':
             if event.type==pygame.QUIT:
                 pygame.quit()
                 exit()
-    
+            elif event.type==pygame.MOUSEBUTTONDOWN and event.button==1:
+                pygame.draw.circle(screen,(255,0,0),[p.x*60+30,p.y*30+15],10)
+                pygame.display.update()
+                print(p.score)
+                p.make_decision()
+                p.update_score()
+                if p.at_finish()==True:
+                    print("Have reached the aim")
+                    pygame.quit()
+                    exit()
